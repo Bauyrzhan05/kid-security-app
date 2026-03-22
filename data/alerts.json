@@ -1,0 +1,80 @@
+[
+  {
+    "id": 1,
+    "messageId": 2,
+    "type": "extortion",
+    "severity": "high",
+    "from": "Белгісіз пайдаланушы",
+    "content": "Маған ақша бер, әйтпесе мектепте өзіңді ұрып жіберемін!",
+    "timestamp": "2025-03-20T09:30:00",
+    "platform": "Telegram",
+    "notifiedParent": true,
+    "status": "active",
+    "keywords": ["ақша бер", "ұрып"]
+  },
+  {
+    "id": 2,
+    "messageId": 4,
+    "type": "threat",
+    "severity": "high",
+    "from": "Белгісіз_666",
+    "content": "Сені өлтіремін, жерден іздейсің! Ешкімге айтпа, болдың!",
+    "timestamp": "2025-03-20T11:45:00",
+    "platform": "Instagram",
+    "notifiedParent": true,
+    "status": "active",
+    "keywords": ["өлтіремін"]
+  },
+  {
+    "id": 3,
+    "messageId": 6,
+    "type": "blackmail",
+    "severity": "high",
+    "from": "Хакер2024",
+    "content": "Сенің суреттерің менде бар. Зорлаймын дедім, ата-аңа айтасың ба?",
+    "timestamp": "2025-03-20T13:15:00",
+    "platform": "Telegram",
+    "notifiedParent": true,
+    "status": "active",
+    "keywords": ["зорлаймын", "ақша"]
+  },
+  {
+    "id": 4,
+    "messageId": 8,
+    "type": "bullying",
+    "severity": "medium",
+    "from": "Класс жауы",
+    "content": "Сен өте ұсқынсызсың, барлығы сені жек көреді. Мектепке келме!",
+    "timestamp": "2025-03-20T14:45:00",
+    "platform": "WhatsApp",
+    "notifiedParent": false,
+    "status": "reviewed",
+    "keywords": ["жек көреді"]
+  },
+  {
+    "id": 5,
+    "messageId": 10,
+    "type": "threat",
+    "severity": "high",
+    "from": "Анонимус",
+    "content": "Тыныш отырмасаң ұрып өлтіремін! Сендей мектепке келмесін!",
+    "timestamp": "2025-03-20T16:00:00",
+    "platform": "Telegram",
+    "notifiedParent": true,
+    "status": "active",
+    "keywords": ["өлтіремін", "ұрып"]
+  },
+  {
+    "id": 6,
+    "messageId": 12,
+    "type": "stalking",
+    "severity": "medium",
+    "from": "Жасырын адам",
+    "content": "Мектептен кейін сені күтемін. Ешкімге айтпа, болды ма?",
+    "timestamp": "2025-03-20T17:00:00",
+    "platform": "Instagram",
+    "notifiedParent": false,
+    "status": "active",
+    "keywords": ["ешкімге айтпа"]
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "Гүлнар Сейткали",
+    "email": "parent@kidsecurity.kz",
+    "password": "parent123",
+    "role": "parent",
+    "avatar": "ГС",
+    "avatarColor": "#7C4DFF",
+    "child": "Айдана Сейткали",
+    "childAge": 14,
+    "phone": "+7 777 123 4567"
+  },
+  {
+    "id": 2,
+    "name": "Айдана Сейткали",
+    "email": "child@kidsecurity.kz",
+    "password": "child123",
+    "role": "child",
+    "avatar": "АС",
+    "avatarColor": "#FF4081",
+    "age": 14,
+    "school": "№45 мектеп",
+    "grade": "8-сынып"
+  }
+]

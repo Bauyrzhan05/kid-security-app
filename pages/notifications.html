@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="kk" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KidSecurity — Ата-ана хабарламасы</title>
+<link rel="stylesheet" href="../css/main.css">
+<style>
+.parent-hero {
+  background: linear-gradient(135deg, #1E1B4B, #312E81, #1E3A5F);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.parent-hero::before {
+  content: '👨‍👩‍👧';
+  position: absolute;
+  right: 20px;
+  bottom: -10px;
+  font-size: 100px;
+  opacity: 0.08;
+}
+.parent-hero-icon {
+  width: 64px; height: 64px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px;
+  flex-shrink: 0;
+}
+.parent-hero-info h2 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.parent-hero-info p { font-size: 14px; color: rgba(255,255,255,0.6); }
+.parent-hero-badge {
+  margin-left: auto;
+  text-align: center;
+  background: rgba(239,68,68,0.25);
+  border-radius: 16px;
+  padding: 12px 20px;
+  flex-shrink: 0;
+}
+.parent-hero-badge-num {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+}
+.parent-hero-badge-label { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+.notif-section { margin-bottom: 28px; }
+.notif-section-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.notif-section-count {
+  background: var(--danger);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.parent-notif-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border);
+  margin-bottom: 14px;
+  overflow: hidden;
+  transition: all var(--transition);
+  animation: slideIn 0.3s ease;
+}
+.parent-notif-card:hover { box-shadow: var(--shadow-md); }
+.parent-notif-card.unread { border-left: 4px solid var(--danger); }
+
+.pnc-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+}
+.pnc-icon {
+  width: 50px; height: 50px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.pnc-icon.urgent { background: rgba(239,68,68,0.12); }
+.pnc-icon.moderate { background: rgba(245,158,11,0.12); }
+.pnc-icon.safe { background: rgba(16,185,129,0.12); }
+
+.pnc-info { flex: 1; min-width: 0; }
+.pnc-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 3px; }
+.pnc-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.pnc-time { font-size: 12px; color: var(--text-muted); }
+.pnc-actions { display: flex; gap: 8px; }
+
+.pnc-body {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-primary);
+}
+.pnc-message {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.7;
+  border: 1px solid var(--border);
+  margin-bottom: 14px;
+}
+.pnc-rec {
+  background: rgba(79,70,229,0.06);
+  border: 1px solid rgba(79,70,229,0.15);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.pnc-rec-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--primary); margin-bottom: 10px; }
+.pnc-rec ul { padding-left: 16px; }
+.pnc-rec li { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+
+.send-notif-form {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  padding: 24px;
+  margin-bottom: 28px;
+}
+.send-notif-title { font-family: var(--font-display); font-size: 16px; font-weight: 800; margin-bottom: 16px; }
+
+.contact-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  margin-bottom: 10px;
+  transition: all var(--transition);
+}
+.contact-card:hover { border-color: var(--primary); box-shadow: var(--shadow-sm); }
+.contact-avatar {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+.contact-info { flex: 1; }
+.contact-name { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+.contact-role { font-size: 12px; color: var(--text-muted); }
+.contact-actions { display: flex; gap: 8px; }
+
+@media (max-width: 768px) {
+  .parent-hero { padding: 16px 14px; gap: 12px; flex-wrap: wrap; border-radius: var(--radius-lg); }
+  .parent-hero-icon { font-size: 32px; }
+  .parent-hero h2 { font-size: 17px; }
+  .parent-hero p { font-size: 12px; }
+  .notif-send-grid { grid-template-columns: 1fr !important; gap: 10px; }
+  .contact-item { gap: 10px; padding: 12px; }
+  .contact-avatar { width: 38px; height: 38px; font-size: 13px; }
+  .contact-actions { flex-direction: row; gap: 6px; flex-wrap: wrap; }
+  .contact-actions .btn { font-size: 11px; padding: 8px 10px; flex: 1; min-width: 80px; justify-content: center; min-height: 40px; }
+  .notif-filter-bar { flex-direction: column; gap: 8px; align-items: flex-start; }
+  .notif-filter-bar .filter-tabs { width: 100%; overflow-x: auto; flex-wrap: nowrap; }
+  .notif-card { padding: 12px; }
+  .notif-card-footer { flex-wrap: wrap; gap: 8px; }
+  .notif-card-footer .btn { flex: 1; min-width: 100px; justify-content: center; font-size: 11px; min-height: 40px; }
+  .notif-card-title { font-size: 13px; }
+  .notif-card-body { font-size: 12px; }
+  .notif-card-header { flex-wrap: wrap; gap: 8px; }
+  .notif-card-time { margin-left: 0; }
+}
+@media (max-width: 480px) {
+  .parent-hero { flex-direction: column; text-align: center; }
+  .notif-card-footer { flex-direction: column; }
+  .notif-card-footer .btn { width: 100%; }
+  .contact-actions { flex-direction: column; }
+  .contact-actions .btn { width: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <main class="main-content">
+    <header class="app-header" id="app-header"></header>
+    <div class="page-content">
+
+      <!-- HERO -->
+      <div class="parent-hero">
+        <div class="parent-hero-icon">🔔</div>
+        <div class="parent-hero-info">
+          <h2>Ата-ана хабарламалары</h2>
+          <p>Балаңыздың қауіпсіздігі туралы барлық хабарламалар осында жиналады</p>
+        </div>
+        <div class="parent-hero-badge" id="unread-badge">
+          <div class="parent-hero-badge-num" id="unread-count">0</div>
+          <div class="parent-hero-badge-label">оқылмаған</div>
+        </div>
+      </div>
+
+      <!-- SEND NOTIFICATION -->
+      <div class="send-notif-form">
+        <div class="send-notif-title">📤 Хабарлама жіберу</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <select class="form-control" id="notif-type">
+            <option value="urgent">🚨 Шұғыл ескерту</option>
+            <option value="moderate">⚠️ Орта деңгей</option>
+            <option value="info">ℹ️ Ақпараттық</option>
+          </select>
+          <select class="form-control" id="notif-channel">
+            <option>📱 Push-хабарлама</option>
+            <option>📧 Email</option>
+            <option>💬 SMS</option>
+          </select>
+        </div>
+        <textarea class="form-control" id="notif-message" rows="3"
+          placeholder="Хабарлама мәтінін жазыңыз..." style="margin-bottom:12px"></textarea>
+        <button class="btn btn-primary" onclick="sendNotification()">
+          📤 Хабарлама жіберу
+        </button>
+      </div>
+
+      <!-- CONTACTS -->
+      <div class="notif-section">
+        <div class="notif-section-title">👥 Байланыс тізімі</div>
+        <div class="contact-card">
+          <div class="contact-avatar" style="background:#7C4DFF">ГС</div>
+          <div class="contact-info">
+            <div class="contact-name">Гүлнар Сейткали</div>
+            <div class="contact-role">👩 Анасы · +7 777 123 4567</div>
+          </div>
+          <div class="contact-actions">
+            <button class="btn btn-danger btn-sm" onclick="callParent('Гүлнар')">📞 Шұғыл қоңырау</button>
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-avatar" style="background:#2196F3">СС</div>
+          <div class="contact-info">
+            <div class="contact-name">Серік Сейткали</div>
+            <div class="contact-role">👨 Әкесі · +7 777 765 4321</div>
+          </div>
+          <div class="contact-actions">
+            <button class="btn btn-danger btn-sm" onclick="callParent('Серік')">📞 Шұғыл қоңырау</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTIFICATIONS LIST -->
+      <div class="notif-section">
+        <div class="notif-section-title">
+          📋 Хабарлама тарихы
+          <span class="notif-section-count" id="total-count">0</span>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:16px">
+          <div class="filter-tabs" id="notif-filters">
+            <div class="filter-tab active" data-f="all">Барлығы</div>
+            <div class="filter-tab" data-f="urgent">🚨 Шұғыл</div>
+            <div class="filter-tab" data-f="unread">🔵 Оқылмаған</div>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="markAllRead()" style="margin-left:auto">✅ Барлығын оқылды</button>
+        </div>
+        <div id="notifications-list"></div>
+      </div>
+
+    </div>
+  </main>
+</div>
+<div id="toast-container" class="toast-container"></div>
+
+<script src="../js/core.js"></script>
+<script>
+if (!Auth.requireAuth()) {}
+initCommon('notifications', 'Ата-ана хабарламасы', 'Ата-анаға жіберілген ескертулер');
+
+const NOTIFS_KEY = 'ks_parent_notifs';
+let currentFilter = 'all';
+
+function getNotifs() {
+  const stored = localStorage.getItem(NOTIFS_KEY);
+  return stored ? JSON.parse(stored) : [];
+}
+
+function saveNotifs(n) {
+  localStorage.setItem(NOTIFS_KEY, JSON.stringify(n));
+}
+
+function initNotifs() {
+  const alerts = AlertsManager.getAll();
+  const existing = getNotifs();
+  if (existing.length === 0 && alerts.length > 0) {
+    const notifs = alerts.filter(a => a.notifiedParent).map(a => ({
+      id: 'n_' + a.id,
+      type: a.severity === 'high' ? 'urgent' : 'moderate',
+      title: a.severity === 'high' ? '🚨 Шұғыл: ' + ThreatEngine.typeLabels[a.type] : '⚠️ Ескерту: ' + ThreatEngine.typeLabels[a.type],
+      from: a.from,
+      content: a.content,
+      platform: a.platform,
+      timestamp: a.timestamp,
+      read: false,
+      recommendations: getRecommendations(a.type),
+    }));
+    saveNotifs(notifs);
+  }
+}
+
+function getRecommendations(type) {
+  const recs = {
+    threat: ['Баламен дереу сөйлесіңіз', 'Мектеп психологына хабарлаңыз', 'Полицияға шағым беріңіз'],
+    extortion: ['Ешқандай ақша аудармаңыз', 'Жіберушінің аккаунтын блоктаңыз', 'Полицияға хабарлаңыз'],
+    blackmail: ['Шантажшыны тоқтатпаңыз', 'Полиция мен психологқа хабарлаңыз', 'Суреттерді тарату туралы арыз беріңіз'],
+    bullying: ['Баламен жылы сөйлесіңіз', 'Мектеп басшылығына хабарлаңыз', 'Кибербуллинг туралы арыз беріңіз'],
+    stalking: ['Баланың орнын бақылаңыз', 'Полицияға хабарлаңыз', 'Аккаунтты жекеге ауыстырыңыз'],
+  };
+  return recs[type] || ['Баламен сөйлесіңіз', 'Психологқа хабарлаңыз'];
+}
+
+function renderNotifs() {
+  const notifs = getNotifs();
+  const unread = notifs.filter(n => !n.read).length;
+  document.getElementById('unread-count').textContent = unread;
+  document.getElementById('total-count').textContent = notifs.length;
+
+  let filtered = notifs;
+  if (currentFilter === 'urgent') filtered = filtered.filter(n => n.type === 'urgent');
+  else if (currentFilter === 'unread') filtered = filtered.filter(n => !n.read);
+
+  const container = document.getElementById('notifications-list');
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Хабарлама жоқ</div></div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(n => `
+    <div class="parent-notif-card ${n.read ? '' : 'unread'}" id="pnc-${n.id}">
+      <div class="pnc-header">
+        <div class="pnc-icon ${n.type}">
+          ${n.type === 'urgent' ? '🚨' : n.type === 'moderate' ? '⚠️' : 'ℹ️'}
+        </div>
+        <div class="pnc-info">
+          <div class="pnc-title">${n.title}</div>
+          <div class="pnc-meta">
+            <span class="badge badge-${n.type === 'urgent' ? 'high' : n.type === 'moderate' ? 'medium' : 'safe'}">
+              ${n.type === 'urgent' ? '🔴 Шұғыл' : n.type === 'moderate' ? '🟡 Орта' : 'ℹ️ Ақпарат'}
+            </span>
+            ${!n.read ? '<span class="badge badge-primary">🔵 Жаңа</span>' : ''}
+            <span class="pnc-time">📅 ${Utils.formatDateTime(n.timestamp)}</span>
+          </div>
+        </div>
+        <div class="pnc-actions">
+          ${!n.read ? `<button class="btn btn-outline btn-sm" onclick="markRead('${n.id}')">✅ Оқылды</button>` : ''}
+        </div>
+      </div>
+      <div class="pnc-body">
+        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:8px">
+          Хабарлама мазмұны
+        </div>
+        <div class="pnc-message">${ThreatEngine.highlightKeywords(n.content)}</div>
+
+        <div style="display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap">
+          <div style="font-size:13px;color:var(--text-secondary)">👤 <strong>${n.from}</strong></div>
+          ${n.platform ? `<div style="font-size:13px;color:var(--text-secondary)">${Utils.platformIcon(n.platform)} ${n.platform}</div>` : ''}
+        </div>
+
+        ${n.recommendations ? `
+          <div class="pnc-rec">
+            <div class="pnc-rec-title">💡 Ата-анаға ұсыныстар</div>
+            <ul>${n.recommendations.map(r => `<li>${r}</li>`).join('')}</ul>
+          </div>
+        ` : ''}
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-danger btn-sm" onclick="callParent('Гүлнар')">📞 Дереу қоңырау</button>
+          <a href="alerts.html" class="btn btn-outline btn-sm">⚠️ Ескертуге өту</a>
+          <button class="btn btn-outline btn-sm" onclick="deleteNotif('${n.id}')">🗑️ Жою</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function markRead(id) {
+  const notifs = getNotifs();
+  const n = notifs.find(x => x.id === id);
+  if (n) { n.read = true; saveNotifs(notifs); renderNotifs(); }
+}
+
+function markAllRead() {
+  const notifs = getNotifs().map(n => ({ ...n, read: true }));
+  saveNotifs(notifs);
+  Toast.success('✅ Барлығы оқылды', 'Барлық хабарламалар оқылды деп белгіленді');
+  renderNotifs();
+}
+
+function deleteNotif(id) {
+  const notifs = getNotifs().filter(n => n.id !== id);
+  saveNotifs(notifs);
+  Toast.success('🗑️ Жойылды', '');
+  renderNotifs();
+}
+
+function sendNotification() {
+  const type = document.getElementById('notif-type').value;
+  const msg = document.getElementById('notif-message').value.trim();
+  if (!msg) { Toast.warning('⚠️', 'Хабарлама мәтінін жазыңыз'); return; }
+
+  const notifs = getNotifs();
+  notifs.unshift({
+    id: 'n_' + Date.now(),
+    type: type === 'urgent' ? 'urgent' : type === 'moderate' ? 'moderate' : 'safe',
+    title: type === 'urgent' ? '🚨 Шұғыл хабарлама' : '⚠️ Ескерту хабарламасы',
+    from: 'Жүйе',
+    content: msg,
+    timestamp: new Date().toISOString(),
+    read: false,
+    recommendations: [],
+  });
+  saveNotifs(notifs);
+  document.getElementById('notif-message').value = '';
+
+  if (type === 'urgent') { SoundAlert.play(); Toast.danger('🚨 Шұғыл хабарлама жіберілді!', msg.slice(0, 60)); }
+  else Toast.success('📤 Хабарлама жіберілді', msg.slice(0, 60));
+
+  renderNotifs();
+}
+
+function callParent(name) {
+  Toast.danger(`📞 ${name} шақырылуда...`, 'Байланыс орнатылуда... Нақты жобада SMS/Push жіберіледі.');
+  SoundAlert.play();
+}
+
+document.getElementById('notif-filters').addEventListener('click', e => {
+  if (e.target.classList.contains('filter-tab')) {
+    document.querySelectorAll('#notif-filters .filter-tab').forEach(t => t.classList.remove('active'));
+    e.target.classList.add('active');
+    currentFilter = e.target.dataset.f;
+    renderNotifs();
+  }
+});
+
+initNotifs();
+renderNotifs();
+</script>
+
+  <!-- BOTTOM NAVIGATION (mobile) -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <a href="dashboard.html" class="bottom-nav-item" data-page="dashboard">
+      <span class="bn-icon">🏠</span>
+      <span class="bn-label">Бақылау</span>
+    </a>
+    <a href="messages.html" class="bottom-nav-item" data-page="messages">
+      <span class="bn-icon">💬</span>
+      <span class="bn-label">Хабарлар</span>
+    </a>
+    <a href="alerts.html" class="bottom-nav-item" data-page="alerts">
+      <span class="bn-icon">⚠️</span>
+      <span class="bn-label">Қауіптер</span>
+      <span class="bn-badge" id="bn-alert-count"></span>
+    </a>
+    <a href="notifications.html" class="bottom-nav-item active" data-page="notifications">
+      <span class="bn-icon">🔔</span>
+      <span class="bn-label">Хабарлама</span>
+    </a>
+    <a href="settings.html" class="bottom-nav-item" data-page="settings">
+      <span class="bn-icon">⚙️</span>
+      <span class="bn-label">Баптау</span>
+    </a>
+  </nav>
+</body>
+</html>

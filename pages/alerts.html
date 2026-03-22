@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="kk" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KidSecurity — Қауіптер</title>
+<link rel="stylesheet" href="../css/main.css">
+<style>
+.alert-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: all var(--transition);
+  animation: slideIn 0.3s ease;
+}
+.alert-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.alert-card.high { border-left: 4px solid var(--danger); }
+.alert-card.medium { border-left: 4px solid var(--warning); }
+.alert-card.low { border-left: 4px solid var(--success); }
+
+.alert-card-header {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg-card);
+  cursor: pointer;
+}
+.alert-card-icon-wrap {
+  width: 48px; height: 48px;
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.alert-card-icon-wrap.high { background: rgba(239,68,68,0.12); }
+.alert-card-icon-wrap.medium { background: rgba(245,158,11,0.12); }
+.alert-card-icon-wrap.low { background: rgba(16,185,129,0.12); }
+
+.alert-card-title { font-family: var(--font-display); font-size: 15px; font-weight: 800; color: var(--text-primary); margin-bottom: 3px; }
+.alert-card-meta { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.alert-card-from { font-size: 13px; color: var(--text-secondary); }
+.alert-card-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+
+.alert-card-body {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-primary);
+}
+
+.alert-content-box {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.7;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+}
+
+.alert-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.alert-info-item {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+}
+.alert-info-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 3px; }
+.alert-info-val { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+
+.expanded-body { display: none; }
+.expanded-body.open { display: block; }
+
+.alert-bulk-actions {
+  display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.summary-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.summary-item {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  text-align: center;
+}
+.summary-num { font-family: var(--font-display); font-size: 28px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
+.summary-label { font-size: 12px; color: var(--text-muted); }
+
+@media (max-width: 600px) {
+  .summary-strip { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .summary-num { font-size: 22px; }
+}
+@media (max-width: 768px) {
+  .alert-actions-bar { flex-wrap: wrap; gap: 8px; }
+  .alert-actions-bar .btn { flex: 1; min-width: 130px; justify-content: center; }
+  .alert-item-actions { flex-wrap: wrap; gap: 6px; }
+  .alert-item-actions .btn { flex: 1; min-width: 90px; justify-content: center; font-size: 11px; padding: 8px 10px; min-height: 38px; }
+  .alert-meta { gap: 6px; flex-wrap: wrap; }
+  .summary-strip { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .summary-item { padding: 12px 10px; }
+  .summary-num { font-size: 20px; }
+  .summary-label { font-size: 11px; }
+  .alert-header { flex-wrap: wrap; gap: 6px; }
+  .alert-type { font-size: 13px; }
+  .alert-time { font-size: 11px; margin-left: 0; width: 100%; }
+  .alert-text { font-size: 12px; }
+  .alert-item { padding: 12px 14px; gap: 10px; }
+  .alert-icon-wrap { width: 36px; height: 36px; font-size: 16px; }
+  .card-header { flex-wrap: wrap; gap: 8px; }
+  .card-header-actions { margin-left: 0; width: 100%; }
+  .card-header-actions .btn { width: 100%; justify-content: center; }
+}
+@media (max-width: 400px) {
+  .summary-strip { grid-template-columns: 1fr 1fr; }
+  .filter-tabs { gap: 4px; }
+}
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <main class="main-content">
+    <header class="app-header" id="app-header"></header>
+    <div class="page-content">
+
+      <!-- SUMMARY -->
+      <div class="summary-strip" id="summary-strip">
+        <div class="summary-item">
+          <div class="summary-num" id="s-total" style="color:var(--primary)">0</div>
+          <div class="summary-label">Барлық ескертулер</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-num" id="s-high" style="color:var(--danger)">0</div>
+          <div class="summary-label">🔴 Жоғары</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-num" id="s-medium" style="color:var(--warning)">0</div>
+          <div class="summary-label">🟡 Орта</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-num" id="s-active" style="color:var(--danger)">0</div>
+          <div class="summary-label">⚡ Белсенді</div>
+        </div>
+      </div>
+
+      <!-- FILTERS & ACTIONS -->
+      <div class="alert-bulk-actions">
+        <div class="filter-tabs" id="alert-filters">
+          <div class="filter-tab active" data-filter="all">Барлығы</div>
+          <div class="filter-tab" data-filter="active">⚡ Белсенді</div>
+          <div class="filter-tab" data-filter="high">🔴 Жоғары</div>
+          <div class="filter-tab" data-filter="medium">🟡 Орта</div>
+          <div class="filter-tab" data-filter="reviewed">✅ Тексерілген</div>
+        </div>
+        <div class="search-bar" style="margin-left:auto">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="alert-search" placeholder="Іздеу...">
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="notifyAllParents()">📞 Ата-анаға хабарла</button>
+      </div>
+
+      <!-- ALERTS LIST -->
+      <div id="alerts-list"></div>
+
+    </div>
+  </main>
+</div>
+<div class="modal-overlay" id="modal" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <span style="font-size:22px">🚨</span>
+      <h3>Ескерту мәліметтері</h3>
+      <div class="modal-close" onclick="closeModal()">✕</div>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Жабу</button>
+      <button class="btn btn-danger" onclick="closeModal()">📞 Ата-анаға хабарла</button>
+    </div>
+  </div>
+</div>
+<div id="toast-container" class="toast-container"></div>
+
+<script src="../js/core.js"></script>
+<script>
+if (!Auth.requireAuth()) {}
+initCommon('alerts', 'Қауіптер', 'Анықталған қауіпті хабарламалар тізімі');
+
+let currentFilter = 'all';
+let searchQuery = '';
+
+const typeLabels = ThreatEngine.typeLabels;
+const typeIcons = { threat:'⚔️', extortion:'💰', blackmail:'🔐', bullying:'👊', stalking:'👁️', harassment:'😡' };
+
+async function loadAlerts() {
+  const data = await fetch('../data/alerts.json').then(r => r.json());
+  AlertsManager.initFromJSON(data);
+  renderAlerts();
+}
+
+function renderAlerts() {
+  const alerts = AlertsManager.getAll();
+  const stats = AlertsManager.getStats();
+
+  document.getElementById('s-total').textContent = stats.total;
+  document.getElementById('s-high').textContent = stats.high;
+  document.getElementById('s-medium').textContent = stats.medium;
+  document.getElementById('s-active').textContent = stats.active;
+
+  let filtered = alerts;
+  if (currentFilter === 'active') filtered = filtered.filter(a => a.status === 'active');
+  else if (currentFilter === 'reviewed') filtered = filtered.filter(a => a.status === 'reviewed');
+  else if (currentFilter === 'high') filtered = filtered.filter(a => a.severity === 'high');
+  else if (currentFilter === 'medium') filtered = filtered.filter(a => a.severity === 'medium');
+
+  if (searchQuery) filtered = filtered.filter(a =>
+    a.from.toLowerCase().includes(searchQuery) || a.content.toLowerCase().includes(searchQuery)
+  );
+
+  const container = document.getElementById('alerts-list');
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-title">Ескерту жоқ</div><div class="empty-text">Таңдалған санатта ескерту жоқ</div></div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(a => {
+    const icon = typeIcons[a.type] || '⚠️';
+    const typeLabel = typeLabels[a.type] || '⚠️ Қауіп';
+    const highlighted = ThreatEngine.highlightKeywords(a.content);
+    const isActive = a.status === 'active';
+    return `
+      <div class="alert-card ${a.severity}" id="alert-${a.id}">
+        <div class="alert-card-header" onclick="toggleAlert(${a.id})">
+          <div class="alert-card-icon-wrap ${a.severity}">${icon}</div>
+          <div style="flex:1;min-width:0">
+            <div class="alert-card-title">${typeLabel}</div>
+            <div class="alert-card-meta">
+              <span class="alert-card-from">👤 ${a.from}</span>
+              <span class="badge badge-${a.severity}">${Utils.severityLabel(a.severity)}</span>
+              ${a.notifiedParent ? '<span class="badge badge-primary">📞 Хабарланды</span>' : ''}
+              ${!isActive ? '<span class="badge badge-safe">✅ Тексерілді</span>' : '<span class="badge badge-high">⚡ Белсенді</span>'}
+            </div>
+          </div>
+          <div class="alert-card-actions">
+            <span style="font-size:12px;color:var(--text-muted)">${Utils.formatTime(a.timestamp)}</span>
+            <span style="font-size:12px;color:var(--text-muted)" id="chevron-${a.id}">▼</span>
+          </div>
+        </div>
+        <div class="expanded-body" id="body-${a.id}">
+          <div class="alert-card-body">
+            <div class="alert-content-box">${highlighted}</div>
+            <div class="alert-info-grid">
+              <div class="alert-info-item">
+                <div class="alert-info-label">Платформа</div>
+                <div class="alert-info-val">${Utils.platformIcon(a.platform)} ${a.platform}</div>
+              </div>
+              <div class="alert-info-item">
+                <div class="alert-info-label">Уақыт</div>
+                <div class="alert-info-val">${Utils.formatDateTime(a.timestamp)}</div>
+              </div>
+              <div class="alert-info-item">
+                <div class="alert-info-label">Ескерту түрі</div>
+                <div class="alert-info-val">${typeLabel}</div>
+              </div>
+              <div class="alert-info-item">
+                <div class="alert-info-label">Күй</div>
+                <div class="alert-info-val">${isActive ? '⚡ Белсенді' : '✅ Тексерілді'}</div>
+              </div>
+            </div>
+            ${a.keywords ? `
+              <div style="margin-bottom:14px">
+                <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:8px">Табылған кілт сөздер</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px">
+                  ${a.keywords.map(k => `<span class="keyword-chip">⚠️ ${k}</span>`).join('')}
+                </div>
+              </div>
+            ` : ''}
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              ${isActive ? `<button class="btn btn-danger btn-sm" onclick="notifyParent(${a.id})">📞 Ата-анаға хабарла</button>` : ''}
+              ${isActive ? `<button class="btn btn-outline btn-sm" onclick="markReviewed(${a.id})">✅ Тексерілді деп белгіле</button>` : ''}
+              <button class="btn btn-outline btn-sm" onclick="deleteAlert(${a.id})">🗑️ Жою</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleAlert(id) {
+  const body = document.getElementById(`body-${id}`);
+  const chevron = document.getElementById(`chevron-${id}`);
+  body.classList.toggle('open');
+  if (chevron) chevron.textContent = body.classList.contains('open') ? '▲' : '▼';
+}
+
+function notifyParent(id) {
+  AlertsManager.markNotified(id);
+  Toast.danger('📞 Хабарланды!', 'Ата-анаға дереу ескерту жіберілді.');
+  SoundAlert.play();
+  renderAlerts();
+}
+
+function markReviewed(id) {
+  AlertsManager.updateStatus(id, 'reviewed');
+  Toast.success('✅ Белгіленді', 'Ескерту тексерілді деп белгіленді');
+  renderAlerts();
+}
+
+function deleteAlert(id) {
+  const alerts = AlertsManager.getAll().filter(a => a.id !== id);
+  localStorage.setItem('ks_alerts', JSON.stringify(alerts));
+  Toast.success('🗑️ Жойылды', 'Ескерту жойылды');
+  renderAlerts();
+}
+
+function notifyAllParents() {
+  const alerts = AlertsManager.getAll().filter(a => a.status === 'active');
+  alerts.forEach(a => AlertsManager.markNotified(a.id));
+  Toast.danger('📞 Барлығы хабарланды!', `${alerts.length} белсенді ескерту бойынша ата-анаға хабарланды.`);
+  SoundAlert.play();
+  setTimeout(renderAlerts, 300);
+}
+
+function closeModal() {
+  document.getElementById('modal').style.display = 'none';
+}
+
+// Filter tabs
+document.getElementById('alert-filters').addEventListener('click', e => {
+  if (e.target.classList.contains('filter-tab')) {
+    document.querySelectorAll('#alert-filters .filter-tab').forEach(t => t.classList.remove('active'));
+    e.target.classList.add('active');
+    currentFilter = e.target.dataset.filter;
+    renderAlerts();
+  }
+});
+
+document.getElementById('alert-search').addEventListener('input', e => {
+  searchQuery = e.target.value.toLowerCase();
+  renderAlerts();
+});
+
+loadAlerts();
+
+// Show toast on page load if active alerts
+setTimeout(() => {
+  const stats = AlertsManager.getStats();
+  if (stats.active > 0) {
+    Toast.danger('🚨 Назар аударыңыз!', `${stats.active} белсенді қауіп ескертуі бар!`);
+    SoundAlert.play();
+  }
+}, 800);
+</script>
+
+  <!-- BOTTOM NAVIGATION (mobile) -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <a href="dashboard.html" class="bottom-nav-item" data-page="dashboard">
+      <span class="bn-icon">🏠</span>
+      <span class="bn-label">Бақылау</span>
+    </a>
+    <a href="messages.html" class="bottom-nav-item" data-page="messages">
+      <span class="bn-icon">💬</span>
+      <span class="bn-label">Хабарлар</span>
+    </a>
+    <a href="alerts.html" class="bottom-nav-item active" data-page="alerts">
+      <span class="bn-icon">⚠️</span>
+      <span class="bn-label">Қауіптер</span>
+      <span class="bn-badge" id="bn-alert-count"></span>
+    </a>
+    <a href="notifications.html" class="bottom-nav-item" data-page="notifications">
+      <span class="bn-icon">🔔</span>
+      <span class="bn-label">Хабарлама</span>
+    </a>
+    <a href="settings.html" class="bottom-nav-item" data-page="settings">
+      <span class="bn-icon">⚙️</span>
+      <span class="bn-label">Баптау</span>
+    </a>
+  </nav>
+</body>
+</html>

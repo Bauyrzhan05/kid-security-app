@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="kk" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KidSecurity — Балаларды онлайн қауіптен қорғау</title>
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* HOME PAGE STYLES */
+body { margin: 0; font-family: var(--font-body); }
+
+.home-page { min-height: 100vh; background: var(--bg-primary); }
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0F0E1A 0%, #1E1B4B 50%, #1a103d 100%);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -30%;
+  width: 80%; height: 80%;
+  background: radial-gradient(circle, rgba(79,70,229,0.3) 0%, transparent 70%);
+  animation: heroGlow 6s ease-in-out infinite alternate;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -30%; right: -20%;
+  width: 60%; height: 60%;
+  background: radial-gradient(circle, rgba(6,182,212,0.2) 0%, transparent 70%);
+  animation: heroGlow 8s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes heroGlow {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(5%, 5%) scale(1.1); }
+}
+
+/* Floating particles */
+.particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.particle {
+  position: absolute;
+  width: 4px; height: 4px;
+  background: rgba(165,180,252,0.6);
+  border-radius: 50%;
+  animation: float linear infinite;
+}
+@keyframes float {
+  0% { transform: translateY(100vh) scale(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-100px) scale(1); opacity: 0; }
+}
+
+/* NAVBAR */
+.home-nav {
+  display: flex;
+  align-items: center;
+  padding: 20px 60px;
+  position: relative;
+  z-index: 10;
+}
+.home-nav-brand {
+  display: flex; align-items: center; gap: 12px;
+}
+.home-nav-brand .brand-icon {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, #4F46E5, #06B6D4);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+.home-nav-brand h1 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+.home-nav-links {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+.home-nav-link {
+  padding: 9px 20px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.home-nav-link:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.home-nav-link.cta {
+  background: linear-gradient(135deg, #4F46E5, #6366F1);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(79,70,229,0.4);
+}
+.home-nav-link.cta:hover { transform: translateY(-1px); box-shadow: 0 6px 25px rgba(79,70,229,0.6); }
+
+/* HERO CONTENT */
+.hero-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 20px;
+  position: relative;
+  z-index: 5;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(79,70,229,0.2);
+  border: 1px solid rgba(79,70,229,0.4);
+  border-radius: 50px;
+  padding: 8px 20px;
+  font-size: 13px;
+  color: #A5B4FC;
+  font-weight: 600;
+  margin-bottom: 28px;
+  animation: bounceIn 0.8s ease;
+}
+
+.hero-badge-dot {
+  width: 8px; height: 8px;
+  background: #4F46E5;
+  border-radius: 50%;
+  animation: pulse-badge 1.5s infinite;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(42px, 7vw, 84px);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.05;
+  letter-spacing: -2px;
+  margin-bottom: 20px;
+  animation: slideIn 0.8s ease 0.2s both;
+}
+
+.hero-title span {
+  background: linear-gradient(135deg, #818CF8, #06B6D4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: clamp(16px, 2.5vw, 20px);
+  color: rgba(255,255,255,0.6);
+  max-width: 600px;
+  line-height: 1.7;
+  margin-bottom: 40px;
+  animation: slideIn 0.8s ease 0.3s both;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: slideIn 0.8s ease 0.4s both;
+}
+
+.btn-hero-primary {
+  padding: 16px 36px;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #4F46E5, #06B6D4);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 8px 30px rgba(79,70,229,0.5);
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  cursor: pointer;
+}
+.btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(79,70,229,0.7); }
+
+.btn-hero-outline {
+  padding: 16px 36px;
+  border-radius: 50px;
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.8);
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.btn-hero-outline:hover { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.08); }
+
+/* STATS STRIP */
+.hero-stats {
+  display: flex;
+  gap: 40px;
+  margin-top: 60px;
+  animation: slideIn 0.8s ease 0.5s both;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.hero-stat { text-align: center; }
+.hero-stat-num {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 900;
+  color: #fff;
+  display: block;
+}
+.hero-stat-label { font-size: 13px; color: rgba(255,255,255,0.5); }
+
+/* FEATURES */
+.features-section {
+  padding: 100px 60px;
+  background: var(--bg-secondary);
+}
+.section-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 12px;
+  text-align: center;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 900;
+  color: var(--text-primary);
+  text-align: center;
+  letter-spacing: -1px;
+  margin-bottom: 60px;
+  line-height: 1.1;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  background: var(--bg-primary);
+  border-radius: 20px;
+  padding: 32px;
+  border: 1px solid var(--border);
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary);
+}
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.feature-card:hover::before { opacity: 1; }
+
+.feature-icon {
+  width: 56px; height: 56px;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, rgba(79,70,229,0.12), rgba(6,182,212,0.12));
+}
+.feature-card h3 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+}
+.feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+
+/* HOW IT WORKS */
+.howitworks {
+  padding: 100px 60px;
+  background: linear-gradient(135deg, #0F0E1A, #1E1B4B);
+  text-align: center;
+}
+.howitworks .section-title { color: #fff; }
+.howitworks .section-label { color: #818CF8; }
+
+.steps-grid {
+  display: flex;
+  gap: 0;
+  max-width: 900px;
+  margin: 0 auto;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.step {
+  flex: 1;
+  min-width: 200px;
+  padding: 24px;
+  text-align: center;
+  position: relative;
+}
+
+.step-number {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4F46E5, #06B6D4);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  margin: 0 auto 16px;
+  box-shadow: 0 6px 20px rgba(79,70,229,0.5);
+}
+
+.step h3 { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+.step p { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+/* FOOTER */
+.home-footer {
+  background: #0A0918;
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  padding: 30px;
+  font-size: 13px;
+}
+.home-footer a { color: rgba(165,180,252,0.8); text-decoration: none; }
+
+/* SCROLL INDICATOR */
+.scroll-indicator {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: bounce 2s infinite;
+  color: rgba(255,255,255,0.4);
+  font-size: 24px;
+  z-index: 5;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+
+@media (max-width: 768px) {
+  .home-nav { padding: 12px 16px; }
+  .home-nav-links { gap: 8px; }
+  .home-nav-link:not(.cta) { display: none; }
+  .hero { padding: 90px 16px 52px; min-height: auto; }
+  .hero-badge { font-size: 11px; padding: 6px 14px; }
+  .hero-title { font-size: 30px !important; line-height: 1.2; }
+  .hero-subtitle { font-size: 14px !important; max-width: 100%; }
+  .hero-actions { flex-direction: column; gap: 10px; align-items: stretch; }
+  .hero-actions .btn { width: 100%; justify-content: center; min-height: 52px; font-size: 15px; }
+  .hero-stats { gap: 16px; flex-wrap: wrap; justify-content: center; }
+  .hero-stat-num { font-size: 24px !important; }
+  .features-section, .howitworks { padding: 40px 16px; }
+  .features-grid { grid-template-columns: 1fr !important; gap: 12px; }
+  .steps-grid { grid-template-columns: 1fr !important; gap: 12px; }
+  .section-title { font-size: 22px !important; }
+  .section-subtitle { font-size: 14px; }
+  .feature-card { padding: 20px 16px; }
+  .step-card { padding: 20px 16px; }
+  .cta-section { padding: 40px 16px; }
+  .cta-title { font-size: 22px !important; }
+  .cta-actions { flex-direction: column; align-items: stretch; gap: 10px; }
+  .cta-actions .btn { width: 100%; justify-content: center; min-height: 52px; }
+  .footer { padding: 20px 16px; flex-direction: column; gap: 8px; text-align: center; }
+  .counter-item { min-width: 80px; }
+  .counter-num { font-size: 26px !important; }
+}
+@media (max-width: 400px) {
+  .hero-title { font-size: 26px !important; }
+  .hero { padding: 80px 12px 40px; }
+  .features-section, .howitworks { padding: 32px 12px; }
+}
+</style>
+</head>
+<body>
+<div class="home-page">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="particles" id="particles"></div>
+
+    <nav class="home-nav">
+      <div class="home-nav-brand">
+        <div class="brand-icon">🛡️</div>
+        <h1>KidSecurity</h1>
+      </div>
+      <div class="home-nav-links">
+        <a href="#features" class="home-nav-link">Мүмкіндіктер</a>
+        <a href="#how" class="home-nav-link">Қалай жұмыс істейді</a>
+        <a href="pages/login.html" class="home-nav-link cta">🚀 Кіру</a>
+      </div>
+    </nav>
+
+    <div class="hero-content">
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        Қазақстандағы балалар қорғанысы №1 жүйесі
+      </div>
+
+      <h1 class="hero-title">
+        Балаңызды<br>
+        <span>онлайн қауіптен</span><br>
+        қорғайық
+      </h1>
+
+      <p class="hero-subtitle">
+        KidSecurity — баланың онлайн хабарламаларын бақылайтын, кибербуллинг пен қорқытуларды анықтайтын және ата-анаға дереу хабарлайтын интеллектуалды қорғаныс жүйесі.
+      </p>
+
+      <div class="hero-cta">
+        <a href="pages/login.html" class="btn-hero-primary">
+          🛡️ Қорғанысты іске қосу
+        </a>
+        <a href="#features" class="btn-hero-outline">
+          📖 Толығырақ
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-num">98%</span>
+          <span class="hero-stat-label">Анықтау дәлдігі</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">&lt;1с</span>
+          <span class="hero-stat-label">Жауап беру уақыты</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">24/7</span>
+          <span class="hero-stat-label">Бақылау</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">5+</span>
+          <span class="hero-stat-label">Платформалар</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-indicator">↓</div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features-section" id="features">
+    <div class="section-label">Мүмкіндіктер</div>
+    <h2 class="section-title">Неге KidSecurity?</h2>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3>AI-талдау жүйесі</h3>
+        <p>Жетілдірілген кілт сөз талдауы және үлгі тану алгоритмдері арқылы қауіпті хабарламаларды дереу анықтайды.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🚨</div>
+        <h3>Нақты уақытта ескерту</h3>
+        <p>Қауіп анықталған кезде ата-анаға дереу хабарлама жіберіледі. Секунд ішінде іс-қимыл жасауға болады.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3>Көп платформалы қолдау</h3>
+        <p>WhatsApp, Telegram, Instagram, TikTok және басқа да әлеуметтік желілерде бақылау жүргізіледі.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <h3>Деректер қауіпсіздігі</h3>
+        <p>Барлық деректер шифрланған. Жеке ақпарат үшінші тарапқа берілмейді. Толық конфиденциалдылық.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Терең талдау</h3>
+        <p>Қауіп деңгейлерін сыныптайды, статистика жинайды және баланың онлайн белсенділігін бейнелейді.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👨‍👩‍👧</div>
+        <h3>Ата-ана бақылауы</h3>
+        <p>Ата-аналарға арналған арнайы панель: барлық ескертулер, қауіп хабарламалары және іс-қимыл нұсқаулары.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="howitworks" id="how">
+    <div class="section-label">Процесс</div>
+    <h2 class="section-title">Жүйе қалай жұмыс істейді?</h2>
+
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3>Хабарламалар түседі</h3>
+        <p>Бала алатын барлық хабарламалар жүйеге түседі</p>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3>AI талдайды</h3>
+        <p>Интеллектуалды алгоритм қауіпті сөздерді анықтайды</p>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3>Қауіп анықталады</h3>
+        <p>Жоғары, орта, немесе төмен деңгей белгіленеді</p>
+      </div>
+      <div class="step">
+        <div class="step-number">4</div>
+        <h3>Ата-анаға хабар</h3>
+        <p>Дереу ескерту хабарламасы жіберіледі</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 50px;">
+      <a href="pages/login.html" class="btn-hero-primary" style="font-size:15px; padding: 14px 32px;">
+        🚀 Қазір бастаңыз — тегін
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="home-footer">
+    <p>© 2025 <strong style="color:rgba(165,180,252,0.9)">KidSecurity</strong> — Барлық балаларды қорғаймыз 🛡️</p>
+    <p style="margin-top:6px"><a href="pages/login.html">Кіру</a> · <a href="pages/dashboard.html">Бақылау панелі</a></p>
+  </footer>
+
+</div>
+
+<script src="js/core.js"></script>
+<script>
+// Particles
+function createParticles() {
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.animationDuration = (8 + Math.random() * 12) + 's';
+    p.style.animationDelay = (Math.random() * 10) + 's';
+    p.style.width = p.style.height = (2 + Math.random() * 4) + 'px';
+    container.appendChild(p);
+  }
+}
+createParticles();
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+// Counter animation
+function animateCounters() {
+  document.querySelectorAll('.hero-stat-num').forEach(el => {
+    const text = el.textContent;
+    const num = parseFloat(text);
+    if (!isNaN(num) && num > 1) {
+      let start = 0;
+      const step = num / 50;
+      const timer = setInterval(() => {
+        start += step;
+        if (start >= num) { el.textContent = text; clearInterval(timer); }
+        else el.textContent = Math.floor(start) + text.replace(/[\d.]/g, '').trim();
+      }, 30);
+    }
+  });
+}
+setTimeout(animateCounters, 600);
+</script>
+</body>
+</html>

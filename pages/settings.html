@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="kk" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KidSecurity — Баптаулар</title>
+<link rel="stylesheet" href="../css/main.css">
+<style>
+.settings-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+}
+.settings-nav { position: sticky; top: calc(var(--header-height) + 24px); }
+.settings-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  margin-bottom: 2px;
+  transition: all var(--transition);
+}
+.settings-nav-item:hover { background: var(--bg-card); color: var(--text-primary); }
+.settings-nav-item.active { background: rgba(79,70,229,0.1); color: var(--primary); font-weight: 600; }
+.settings-nav-icon { font-size: 16px; }
+
+.settings-section {
+  display: none;
+}
+.settings-section.active { display: block; }
+
+.settings-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.settings-card-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-primary);
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+}
+.setting-row:last-child { border: none; }
+.setting-row:hover { background: var(--bg-primary); }
+.setting-info { flex: 1; }
+.setting-label { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+.setting-desc { font-size: 12px; color: var(--text-muted); }
+
+.keyword-manager {
+  padding: 22px;
+}
+.keyword-input-row { display: flex; gap: 10px; margin-bottom: 16px; }
+.keyword-chips-container { display: flex; flex-wrap: wrap; gap: 8px; }
+.editable-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.editable-chip.high { background: rgba(239,68,68,0.1); color: var(--danger); border: 1px solid rgba(239,68,68,0.2); }
+.editable-chip.medium { background: rgba(245,158,11,0.1); color: var(--warning); border: 1px solid rgba(245,158,11,0.2); }
+.editable-chip.low { background: rgba(16,185,129,0.1); color: var(--success); border: 1px solid rgba(16,185,129,0.2); }
+.chip-remove {
+  cursor: pointer;
+  font-size: 12px;
+  opacity: 0.6;
+  line-height: 1;
+}
+.chip-remove:hover { opacity: 1; }
+
+.profile-avatar-edit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 22px;
+  border-bottom: 1px solid var(--border);
+}
+.avatar-large {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; font-weight: 700; color: #fff;
+  margin-bottom: 12px;
+  position: relative;
+}
+.avatar-edit-btn {
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 26px; height: 26px;
+  background: var(--primary);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+}
+.avatar-name { font-family: var(--font-display); font-size: 18px; font-weight: 800; }
+.avatar-role { font-size: 13px; color: var(--text-muted); }
+
+.danger-zone .setting-row:hover { background: rgba(239,68,68,0.04); }
+.danger-zone .setting-label { color: var(--danger); }
+
+.stats-reset {
+  background: rgba(239,68,68,0.06);
+  border: 1px solid rgba(239,68,68,0.15);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin: 16px 22px;
+}
+
+@media (max-width: 900px) {
+  .settings-layout { grid-template-columns: 1fr; gap: 0; }
+  .settings-nav { position: static; }
+}
+@media (max-width: 768px) {
+  .settings-layout { display: flex; flex-direction: column; }
+  .settings-nav {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 4px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-card);
+    position: sticky;
+    top: 56px;
+    z-index: 20;
+  }
+  .settings-nav::-webkit-scrollbar { display: none; }
+  .settings-nav-item {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    margin-bottom: 0;
+    white-space: nowrap;
+    min-height: 38px;
+  }
+  .settings-nav-item span:first-child { display: none; }
+  .settings-content { padding: 14px; }
+  .setting-item { padding: 12px 0; }
+  .setting-item label { font-size: 13px; }
+  .setting-item p { font-size: 12px; }
+  .keyword-chips { gap: 6px; }
+  .keyword-chip { font-size: 11px; padding: 4px 10px; }
+}
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <main class="main-content">
+    <header class="app-header" id="app-header"></header>
+    <div class="page-content">
+      <div class="settings-layout">
+
+        <!-- SETTINGS NAV -->
+        <div class="settings-nav card" style="padding:12px">
+          <div class="settings-nav-item active" onclick="showSection('profile')" data-s="profile"><span class="settings-nav-icon">👤</span> Профиль</div>
+          <div class="settings-nav-item" onclick="showSection('security')" data-s="security"><span class="settings-nav-icon">🛡️</span> Қорғаныс</div>
+          <div class="settings-nav-item" onclick="showSection('keywords')" data-s="keywords"><span class="settings-nav-icon">🔍</span> Кілт сөздер</div>
+          <div class="settings-nav-item" onclick="showSection('notifications')" data-s="notifications"><span class="settings-nav-icon">🔔</span> Хабарламалар</div>
+          <div class="settings-nav-item" onclick="showSection('appearance')" data-s="appearance"><span class="settings-nav-icon">🎨</span> Сыртқы вид</div>
+          <div class="settings-nav-item" onclick="showSection('danger')" data-s="danger"><span class="settings-nav-icon" style="color:var(--danger)">⚠️</span> Қауіпті аймақ</div>
+        </div>
+
+        <!-- SECTIONS -->
+        <div>
+
+          <!-- PROFILE -->
+          <div class="settings-section active" id="s-profile">
+            <div class="settings-card">
+              <div class="settings-card-title">👤 Профиль мәліметтері</div>
+              <div class="profile-avatar-edit">
+                <div class="avatar-large" id="profile-avatar" style="background:#7C4DFF">
+                  ??
+                  <div class="avatar-edit-btn">✏️</div>
+                </div>
+                <div class="avatar-name" id="profile-name">Жүктелуде...</div>
+                <div class="avatar-role" id="profile-role">—</div>
+              </div>
+              <div style="padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div class="form-group">
+                  <label class="form-label">Аты-жөні</label>
+                  <input class="form-control" id="edit-name">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Email</label>
+                  <input class="form-control" id="edit-email">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Телефон</label>
+                  <input class="form-control" placeholder="+7 777 000 0000">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Тіл</label>
+                  <select class="form-control"><option>🇰🇿 Қазақша</option><option>🇷🇺 Орысша</option><option>🇬🇧 Ағылшынша</option></select>
+                </div>
+              </div>
+              <div style="padding:0 22px 22px">
+                <button class="btn btn-primary" onclick="saveProfile()">💾 Сақтау</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECURITY -->
+          <div class="settings-section" id="s-security">
+            <div class="settings-card">
+              <div class="settings-card-title">🛡️ Анықтау баптаулары</div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <div class="setting-label">Жоғары деңгей қауіптерді анықтау</div>
+                  <div class="setting-desc">Өлтіру, зорлау сияқты ауыр қауіп сөздерін бақылау</div>
+                </div>
+                <label class="switch"><input type="checkbox" checked><span class="switch-slider"></span></label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <div class="setting-label">Орта деңгей қауіптер</div>
+                  <div class="setting-desc">Бопсалау, қудалау хабарламаларын анықтау</div>
+                </div>
+                <label class="switch"><input type="checkbox" checked><span class="switch-slider"></span></label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <div class="setting-label">Дыбыстық ескерту</div>
+                  <div class="setting-desc">Қауіп анықталғанда дыбыстық сигнал беру</div>
+                </div>
+                <label class="switch"><input type="checkbox" id="sound-toggle" checked><span class="switch-slider"></span></label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <div class="setting-label">Автоматты ата-ана хабары</div>
+                  <div class="setting-desc">Жоғары қауіп кезінде ата-анаға автоматты хабарлама</div>
+                </div>
+                <label class="switch"><input type="checkbox" checked><span class="switch-slider"></span></label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <div class="setting-label">Нақты уақытта бақылау</div>
+                  <div class="setting-desc">Жаңа хабарламаларды 30 секунд сайын тексеру</div>
+                </div>
+                <label class="switch"><input type="checkbox" checked><span class="switch-slider"></span></label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <div class="setting-label">Белгісіз жіберушілерді бақылау</div>
+                  <div class="setting-desc">Контактілер тізімінде жоқ адамдардан хабарды ескерту</div>
+                </div>
+                <label class="switch"><input type="checkbox" checked><span class="switch-slider"></span></label>
+              </div>
+            </div>
+          </div>
+
+          <!-- KEYWORDS -->
+          <div class="settings-section" id="s-keywords">
+            <div class="settings-card">
+              <div class="settings-card-title">🔍 Кілт сөздер басқармасы</div>
+              <div class="keyword-manager">
+                <div style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">
+                  Жүйе осы сөздерді хабарламалардан іздейді. Жаңа сөз қосуға болады.
+                </div>
+
+                <div style="margin-bottom:20px">
+                  <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--danger);margin-bottom:10px">🔴 ЖОҒАРЫ ДЕҢГЕЙ</div>
+                  <div class="keyword-chips-container" id="high-keywords"></div>
+                </div>
+                <div style="margin-bottom:20px">
+                  <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--warning);margin-bottom:10px">🟡 ОРТА ДЕҢГЕЙ</div>
+                  <div class="keyword-chips-container" id="medium-keywords"></div>
+                </div>
+                <div style="margin-bottom:20px">
+                  <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--success);margin-bottom:10px">🟢 ТӨМЕН ДЕҢГЕЙ</div>
+                  <div class="keyword-chips-container" id="low-keywords"></div>
+                </div>
+
+                <div style="border-top:1px solid var(--border);padding-top:20px">
+                  <div style="font-size:13px;font-weight:700;margin-bottom:10px">➕ Жаңа кілт сөз қосу</div>
+                  <div class="keyword-input-row">
+                    <input class="form-control" id="new-keyword" placeholder="Жаңа кілт сөз...">
+                    <select class="form-control" id="keyword-level" style="max-width:160px">
+                      <option value="high">🔴 Жоғары</option>
+                      <option value="medium">🟡 Орта</option>
+                      <option value="low">🟢 Төмен</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="addKeyword()">Қосу</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- NOTIFICATIONS -->
+          <div class="settings-section" id="s-notifications">
+            <div class="settings-card">
+              <div class="settings-card-title">🔔 Хабарлама баптаулары</div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <div class="setting-label">Push-хабарламалар</div>
+                  <div class="setting-desc">Браузер арқылы ескерту алу</div>
+                </div>
+                <label class="switch"><input type="checkbox" checked><span class="switch-slider"></span></label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <div class="setting-label">Email хабарламалар</div>
+                  <div class="setting-desc">Электрондық пошта арқылы ескерту</div>
+                </div>
+                <label class="switch"><input type="checkbox" checked><span class="switch-slider"></span></label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <div class="setting-label">SMS ескертулер</div>
+                  <div class="setting-desc">Тек жоғары деңгей қауіп кезінде</div>
+                </div>
+                <label class="switch"><input type="checkbox" checked><span class="switch-slider"></span></label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <div class="setting-label">Күнделікті есеп</div>
+                  <div class="setting-desc">Күн сайын белсенділік есебін алу</div>
+                </div>
+                <label class="switch"><input type="checkbox"><span class="switch-slider"></span></label>
+              </div>
+            </div>
+          </div>
+
+          <!-- APPEARANCE -->
+          <div class="settings-section" id="s-appearance">
+            <div class="settings-card">
+              <div class="settings-card-title">🎨 Сыртқы вид баптаулары</div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <div class="setting-label">Қараңғы режим</div>
+                  <div class="setting-desc">Интерфейстің қараңғы түрін қосу</div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="dark-mode-toggle" onchange="toggleDark(this)">
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <div class="setting-label">Анимацияларды өшіру</div>
+                  <div class="setting-desc">Жайлылық үшін анимацияларды азайту</div>
+                </div>
+                <label class="switch"><input type="checkbox"><span class="switch-slider"></span></label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <div class="setting-label">Тығыз режим</div>
+                  <div class="setting-desc">Хабарламалар тізімін тығызырақ көрсету</div>
+                </div>
+                <label class="switch"><input type="checkbox"><span class="switch-slider"></span></label>
+              </div>
+            </div>
+          </div>
+
+          <!-- DANGER ZONE -->
+          <div class="settings-section" id="s-danger">
+            <div class="settings-card danger-zone">
+              <div class="settings-card-title" style="color:var(--danger)">⚠️ Қауіпті аймақ</div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <div class="setting-label">Барлық ескертулерді тазалау</div>
+                  <div class="setting-desc">localStorage-тен барлық ескертулерді жою</div>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="clearAlerts()" style="border-color:var(--danger);color:var(--danger)">🗑️ Тазалау</button>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <div class="setting-label">Хабарламалар тарихын жою</div>
+                  <div class="setting-desc">Ата-ана хабарламаларының тарихын тазалау</div>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="clearNotifs()" style="border-color:var(--danger);color:var(--danger)">🗑️ Жою</button>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info">
+                  <div class="setting-label">Аккаунттан шығу</div>
+                  <div class="setting-desc">Сессияны аяқтап, жүйеден шығу</div>
+                </div>
+                <button class="btn btn-danger btn-sm" onclick="Auth.logout()">🚪 Шығу</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<div id="toast-container" class="toast-container"></div>
+
+<script src="../js/core.js"></script>
+<script>
+if (!Auth.requireAuth()) {}
+initCommon('settings', 'Баптаулар', 'Жүйе баптауларын реттеңіз');
+
+function showSection(name) {
+  document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.settings-nav-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('s-' + name).classList.add('active');
+  document.querySelector(`[data-s="${name}"]`).classList.add('active');
+}
+
+// Load profile
+const user = Auth.getUser();
+if (user) {
+  document.getElementById('profile-avatar').style.background = user.avatarColor || '#7C4DFF';
+  document.getElementById('profile-avatar').childNodes[0].textContent = user.avatar || '??';
+  document.getElementById('profile-name').textContent = user.name;
+  document.getElementById('profile-role').textContent = user.role === 'parent' ? '👨‍👩‍👧 Ата-ана' : '🧒 Бала';
+  document.getElementById('edit-name').value = user.name;
+  document.getElementById('edit-email').value = user.email;
+}
+
+function saveProfile() {
+  Toast.success('💾 Сақталды', 'Профиль мәліметтері жаңартылды');
+}
+
+// Dark mode
+const darkToggle = document.getElementById('dark-mode-toggle');
+if (darkToggle) darkToggle.checked = Theme.get() === 'dark';
+function toggleDark(el) {
+  Theme.apply(el.checked ? 'dark' : 'light');
+}
+
+// Keywords
+function renderKeywords() {
+  ['high', 'medium', 'low'].forEach(level => {
+    const container = document.getElementById(level + '-keywords');
+    if (!container) return;
+    container.innerHTML = ThreatEngine.keywords[level].map((kw, i) => `
+      <div class="editable-chip ${level}">
+        ${kw}
+        <span class="chip-remove" onclick="removeKeyword('${level}', ${i})">✕</span>
+      </div>
+    `).join('');
+  });
+}
+
+function removeKeyword(level, idx) {
+  ThreatEngine.keywords[level].splice(idx, 1);
+  Toast.success('✅', 'Кілт сөз жойылды');
+  renderKeywords();
+}
+
+function addKeyword() {
+  const val = document.getElementById('new-keyword').value.trim();
+  const level = document.getElementById('keyword-level').value;
+  if (!val) return;
+  ThreatEngine.keywords[level].push(val);
+  document.getElementById('new-keyword').value = '';
+  Toast.success('✅ Қосылды', `"${val}" — ${level} деңгейге қосылды`);
+  renderKeywords();
+}
+
+function clearAlerts() {
+  if (confirm('Барлық ескертулерді жоюға сенімдісіз бе?')) {
+    localStorage.removeItem('ks_alerts');
+    Toast.success('🗑️ Тазаланды', 'Барлық ескертулер жойылды');
+  }
+}
+
+function clearNotifs() {
+  if (confirm('Хабарламалар тарихын жоюға сенімдісіз бе?')) {
+    localStorage.removeItem('ks_parent_notifs');
+    Toast.success('🗑️ Тазаланды', 'Хабарламалар тарихы жойылды');
+  }
+}
+
+renderKeywords();
+</script>
+
+  <!-- BOTTOM NAVIGATION (mobile) -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <a href="dashboard.html" class="bottom-nav-item" data-page="dashboard">
+      <span class="bn-icon">🏠</span>
+      <span class="bn-label">Бақылау</span>
+    </a>
+    <a href="messages.html" class="bottom-nav-item" data-page="messages">
+      <span class="bn-icon">💬</span>
+      <span class="bn-label">Хабарлар</span>
+    </a>
+    <a href="alerts.html" class="bottom-nav-item" data-page="alerts">
+      <span class="bn-icon">⚠️</span>
+      <span class="bn-label">Қауіптер</span>
+      <span class="bn-badge" id="bn-alert-count"></span>
+    </a>
+    <a href="notifications.html" class="bottom-nav-item" data-page="notifications">
+      <span class="bn-icon">🔔</span>
+      <span class="bn-label">Хабарлама</span>
+    </a>
+    <a href="settings.html" class="bottom-nav-item active" data-page="settings">
+      <span class="bn-icon">⚙️</span>
+      <span class="bn-label">Баптау</span>
+    </a>
+  </nav>
+</body>
+</html>

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="kk" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KidSecurity — Хабарламалар</title>
+<link rel="stylesheet" href="../css/main.css">
+<style>
+.messages-layout { display: grid; grid-template-columns: 360px 1fr; gap: 0; height: calc(100vh - var(--header-height)); overflow: hidden; }
+.messages-list-panel { border-right: 1px solid var(--border); overflow-y: auto; background: var(--bg-card); }
+.messages-detail-panel { overflow-y: auto; background: var(--bg-primary); display: flex; flex-direction: column; }
+
+.messages-panel-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-card);
+  position: sticky; top: 0; z-index: 5;
+}
+.messages-panel-title { font-family: var(--font-display); font-size: 16px; font-weight: 800; margin-bottom: 12px; color: var(--text-primary); }
+
+.message-list-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px 20px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: all var(--transition);
+  position: relative;
+}
+.message-list-item:hover { background: var(--bg-primary); }
+.message-list-item.active { background: rgba(79,70,229,0.06); border-right: 3px solid var(--primary); }
+.message-list-item.threat { border-left: 3px solid var(--danger); background: rgba(239,68,68,0.04); }
+.message-list-item.threat:hover { background: rgba(239,68,68,0.08); }
+.message-list-item.threat.active { background: rgba(239,68,68,0.10); border-right: 3px solid var(--danger); }
+
+.msg-avatar {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+.msg-info { flex: 1; min-width: 0; }
+.msg-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 3px; }
+.msg-sender { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+.msg-time { font-size: 11px; color: var(--text-muted); }
+.msg-preview { font-size: 12px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.msg-preview.danger { color: var(--danger); font-weight: 500; }
+.msg-badges { display: flex; gap: 4px; margin-top: 4px; }
+
+.unread-indicator {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 9px; height: 9px;
+  background: var(--primary);
+  border-radius: 50%;
+}
+
+/* DETAIL PANEL */
+.detail-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  padding: 40px;
+}
+
+.detail-message {
+  padding: 28px;
+  flex: 1;
+}
+
+.detail-header {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.detail-avatar {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+.detail-sender-name { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: var(--text-primary); margin-bottom: 4px; }
+.detail-meta { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.detail-meta-item { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+
+.detail-content {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  font-size: 16px;
+  color: var(--text-primary);
+  line-height: 1.8;
+}
+.detail-content.threat-detail {
+  background: rgba(239,68,68,0.04);
+  border-color: rgba(239,68,68,0.3);
+}
+
+.detail-analysis {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  border: 1px solid var(--border);
+}
+.detail-analysis-title { font-family: var(--font-display); font-size: 15px; font-weight: 800; margin-bottom: 14px; color: var(--text-primary); }
+
+.keyword-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.keyword-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.2);
+  color: var(--danger);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.action-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* NEW MESSAGE */
+.new-msg-form {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-top: 20px;
+  border: 1px dashed var(--border);
+}
+.new-msg-title { font-family: var(--font-display); font-size: 15px; font-weight: 800; margin-bottom: 14px; color: var(--text-primary); }
+.new-msg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+
+@media (max-width: 1024px) {
+  .messages-layout { grid-template-columns: 1fr; height: auto; overflow: visible; }
+  .messages-list-panel { height: auto; min-height: 200px; max-height: 50vh; }
+  .messages-detail-panel { display: none; }
+  .messages-detail-panel.show {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 250;
+    overflow-y: auto;
+    background: var(--bg-primary);
+    padding-top: var(--header-height);
+    padding-bottom: 72px;
+    flex-direction: column;
+  }
+  .new-msg-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .messages-layout { height: auto; overflow: visible; }
+  .messages-list-panel { max-height: 85vh; border-right: none; border-bottom: 1px solid var(--border); }
+  .message-list-item { padding: 12px 14px; gap: 10px; }
+  .messages-panel-header { padding: 12px 14px; position: sticky; top: 0; z-index: 10; }
+  .messages-panel-title { font-size: 14px; margin-bottom: 8px; }
+  .new-msg-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="app-layout" style="flex-direction:column">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <main class="main-content" style="overflow:hidden">
+    <header class="app-header" id="app-header"></header>
+    <div class="messages-layout" id="messages-layout">
+
+      <!-- LIST PANEL -->
+      <div class="messages-list-panel">
+        <div class="messages-panel-header">
+          <div class="messages-panel-title">💬 Хабарламалар</div>
+          <div class="search-bar" style="max-width:100%">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="Хабарламаларды іздеу...">
+          </div>
+          <div class="filter-tabs" style="margin-top:10px">
+            <div class="filter-tab active" data-filter="all">Барлығы</div>
+            <div class="filter-tab" data-filter="threat">⚠️ Қауіпті</div>
+            <div class="filter-tab" data-filter="safe">✅ Қауіпсіз</div>
+          </div>
+        </div>
+        <div id="messages-list">
+          <div class="empty-state"><div class="empty-icon">💬</div><div>Жүктелуде...</div></div>
+        </div>
+      </div>
+
+      <!-- DETAIL PANEL -->
+      <div class="messages-detail-panel" id="detail-panel">
+        <div class="detail-empty">
+          <div style="font-size:64px;margin-bottom:16px">💬</div>
+          <h3 style="font-size:18px;font-weight:700;color:var(--text-secondary);margin-bottom:8px">Хабарламаны таңдаңыз</h3>
+          <p style="font-size:14px">Сол жақтан хабарламаны басыңыз</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script src="../js/core.js"></script>
+<script>
+if (!Auth.requireAuth()) {}
+initCommon('messages', 'Хабарламалар', 'Кіріс хабарламаларды бақылаңыз');
+
+let allMessages = [];
+let activeFilter = 'all';
+let selectedMsg = null;
+
+async function loadMessages() {
+  const data = await fetch('../data/messages.json').then(r => r.json());
+  allMessages = data;
+  renderList();
+}
+
+function renderList() {
+  const query = document.getElementById('search-input').value.toLowerCase();
+  let filtered = allMessages;
+
+  if (activeFilter === 'threat') filtered = filtered.filter(m => m.threat);
+  else if (activeFilter === 'safe') filtered = filtered.filter(m => !m.threat);
+
+  if (query) filtered = filtered.filter(m =>
+    m.from.toLowerCase().includes(query) || m.content.toLowerCase().includes(query)
+  );
+
+  const container = document.getElementById('messages-list');
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Нәтиже жоқ</div></div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(m => {
+    const analysis = ThreatEngine.analyze(m.content);
+    const isActive = selectedMsg && selectedMsg.id === m.id;
+    return `
+      <div class="message-list-item ${m.threat ? 'threat' : ''} ${isActive ? 'active' : ''}" 
+           onclick="selectMessage(${m.id})">
+        <div class="msg-avatar" style="background:${m.avatarColor}">${m.avatar}</div>
+        <div class="msg-info">
+          <div class="msg-header">
+            <span class="msg-sender">${m.from}</span>
+            <span class="msg-time">${Utils.formatTime(m.timestamp)}</span>
+          </div>
+          <div class="msg-preview ${m.threat ? 'danger' : ''}">${Utils.truncate(m.content, 55)}</div>
+          <div class="msg-badges">
+            ${m.threat ? `<span class="badge badge-${m.severity}">${Utils.severityLabel(m.severity)}</span>` : `<span class="badge badge-safe">✅ Қауіпсіз</span>`}
+            <span style="font-size:11px;color:var(--text-muted)">${Utils.platformIcon(m.platform)} ${m.platform}</span>
+          </div>
+        </div>
+        ${!m.read ? '<div class="unread-indicator"></div>' : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function selectMessage(id) {
+  selectedMsg = allMessages.find(m => m.id === id);
+  if (!selectedMsg) return;
+  renderList();
+  renderDetail(selectedMsg);
+  const detail = document.getElementById('detail-panel');
+  detail.classList.add('show');
+}
+
+function renderDetail(msg) {
+  const analysis = ThreatEngine.analyze(msg.content);
+  const highlighted = analysis.isThreat ? ThreatEngine.highlightKeywords(msg.content) : msg.content;
+
+  const typeLabel = ThreatEngine.typeLabels[msg.threatType || analysis.type] || '⚠️ Қауіп';
+
+  let analysisHTML = '';
+  if (analysis.isThreat) {
+    analysisHTML = `
+      <div class="detail-analysis" style="border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.03)">
+        <div class="detail-analysis-title">🤖 AI Талдау нәтижесі</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+          <span class="badge badge-${analysis.severity}">${Utils.severityLabel(analysis.severity)}</span>
+          <span class="badge badge-high">${typeLabel}</span>
+        </div>
+        ${analysis.keywords.length > 0 ? `
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">Анықталған қауіпті сөздер:</div>
+          <div class="keyword-chips">
+            ${analysis.keywords.map(k => `<div class="keyword-chip">⚠️ ${k}</div>`).join('')}
+          </div>
+        ` : ''}
+        <div class="action-btns">
+          <button class="btn btn-danger btn-sm" onclick="reportThreat(${msg.id})">🚨 Қауіп туралы хабарла</button>
+          <button class="btn btn-outline btn-sm" onclick="markSafe(${msg.id})">✅ Қауіпсіз деп белгіле</button>
+        </div>
+      </div>
+    `;
+  } else {
+    analysisHTML = `
+      <div class="detail-analysis" style="border-color:rgba(16,185,129,0.2);background:rgba(16,185,129,0.03)">
+        <div class="detail-analysis-title" style="color:var(--success)">✅ Хабарлама қауіпсіз</div>
+        <div style="font-size:13px;color:var(--text-secondary)">AI жүйесі бұл хабарламада қауіпті мазмұн анықтамады.</div>
+      </div>
+    `;
+  }
+
+  document.getElementById('detail-panel').innerHTML = `
+    <div class="detail-message">
+      ${msg.threat ? `
+        <div class="danger-banner">
+          <div class="danger-banner-icon">🚨</div>
+          <div>
+            <div class="danger-banner-title">Қауіпті хабарлама анықталды!</div>
+            <div class="danger-banner-text">Бұл хабарлама зиянды мазмұн қамтиды. Ата-анаға дереу хабарланды.</div>
+          </div>
+        </div>
+      ` : ''}
+
+      <div class="detail-header">
+        <div class="detail-avatar" style="background:${msg.avatarColor}">${msg.avatar}</div>
+        <div style="flex:1">
+          <div class="detail-sender-name">${msg.from}</div>
+          <div class="detail-meta">
+            <span class="detail-meta-item">📅 ${Utils.formatDateTime(msg.timestamp)}</span>
+            <span class="detail-meta-item">${Utils.platformIcon(msg.platform)} ${msg.platform}</span>
+            <span class="detail-meta-item">→ ${msg.to}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-content ${msg.threat ? 'threat-detail' : ''}">${highlighted}</div>
+
+      ${analysisHTML}
+
+      <div class="new-msg-form" style="margin-top:20px">
+        <div class="new-msg-title">➕ Жаңа хабарлама қосу</div>
+        <div class="new-msg-grid">
+          <input class="form-control" id="new-sender" placeholder="Жіберуші аты">
+          <select class="form-control" id="new-platform">
+            <option>WhatsApp</option><option>Telegram</option><option>Instagram</option>
+          </select>
+        </div>
+        <textarea class="form-control" id="new-content" rows="3" placeholder="Хабарлама мәтінін жазыңыз..." style="margin-bottom:10px"></textarea>
+        <button class="btn btn-primary" onclick="addNewMessage()">📨 Хабарламаны талдау</button>
+      </div>
+    </div>
+  `;
+}
+
+function reportThreat(id) {
+  const msg = allMessages.find(m => m.id === id);
+  if (!msg) return;
+  const alert = AlertsManager.add({
+    messageId: msg.id,
+    type: msg.threatType || 'threat',
+    severity: msg.severity || 'high',
+    from: msg.from,
+    content: msg.content,
+    timestamp: msg.timestamp,
+    platform: msg.platform,
+    notifiedParent: true,
+  });
+  Toast.danger('🚨 Ата-анаға хабарланды!', `"${msg.from}" хабарламасы туралы хабарлама жіберілді.`);
+  SoundAlert.play();
+}
+
+function markSafe(id) {
+  Toast.success('✅ Белгіленді', 'Хабарлама қауіпсіз деп белгіленді');
+}
+
+function addNewMessage() {
+  const sender = document.getElementById('new-sender').value.trim();
+  const platform = document.getElementById('new-platform').value;
+  const content = document.getElementById('new-content').value.trim();
+
+  if (!sender || !content) {
+    Toast.warning('⚠️ Толтырыңыз', 'Барлық өрістерді толтырыңыз');
+    return;
+  }
+
+  const analysis = ThreatEngine.analyze(content);
+  const newMsg = {
+    id: Date.now(),
+    from: sender,
+    avatar: sender.slice(0, 2).toUpperCase(),
+    avatarColor: analysis.isThreat ? '#F44336' : '#4CAF50',
+    to: 'Айдана',
+    content,
+    timestamp: new Date().toISOString(),
+    platform,
+    threat: analysis.isThreat,
+    severity: analysis.severity,
+    read: false,
+    threatType: analysis.type,
+  };
+
+  allMessages.unshift(newMsg);
+
+  if (analysis.isThreat) {
+    SoundAlert.play();
+    AlertsManager.add({
+      type: analysis.type, severity: analysis.severity,
+      from: sender, content, timestamp: newMsg.timestamp,
+      platform, notifiedParent: true,
+    });
+    Toast.danger('🚨 ҚАУІП АНЫҚТАЛДЫ!', `"${sender}" хабарламасында қауіпті мазмұн бар!`);
+    setTimeout(() => Toast.danger('📞 Ата-анаға хабарланды!', 'Ата-ана алдағы уақытта хабардар болады.'), 1500);
+  } else {
+    Toast.success('✅ Хабарлама қауіпсіз', `"${sender}" хабарламасы талданды — қауіп жоқ.`);
+  }
+
+  renderList();
+  selectMessage(newMsg.id);
+}
+
+// Filter tabs
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('filter-tab')) {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    e.target.classList.add('active');
+    activeFilter = e.target.dataset.filter;
+    renderList();
+  }
+});
+
+// Search
+document.addEventListener('input', e => {
+  if (e.target.id === 'search-input') renderList();
+});
+
+// Fake real-time updates
+let autoMsgTimer = setInterval(() => {
+  const fakeMessages = [
+    { from: 'Жаңа хабар', content: 'Сәлем! Бүгін ойнауға шығасың ба?', platform: 'WhatsApp', threat: false },
+    { from: 'Белгісіз', content: 'Ақша бер, әйтпесе өлтіремін!', platform: 'Telegram', threat: true, severity: 'high', threatType: 'threat' },
+    { from: 'Досыңмен', content: 'Математика тапсырмасын жасадың ба?', platform: 'WhatsApp', threat: false },
+  ];
+  const rnd = fakeMessages[Math.floor(Math.random() * fakeMessages.length)];
+  const analysis = ThreatEngine.analyze(rnd.content);
+  const newMsg = {
+    id: Date.now(),
+    from: rnd.from,
+    avatar: rnd.from.slice(0,2).toUpperCase(),
+    avatarColor: analysis.isThreat ? '#F44336' : '#4CAF50',
+    to: 'Айдана',
+    content: rnd.content,
+    timestamp: new Date().toISOString(),
+    platform: rnd.platform,
+    threat: analysis.isThreat,
+    severity: analysis.severity,
+    read: false,
+    threatType: analysis.type,
+  };
+  allMessages.unshift(newMsg);
+  if (analysis.isThreat) {
+    SoundAlert.play();
+    AlertsManager.add({ type: analysis.type, severity: analysis.severity, from: rnd.from, content: rnd.content, timestamp: newMsg.timestamp, platform: rnd.platform, notifiedParent: true });
+    Toast.danger('🚨 Жаңа қауіп!', `"${rnd.from}" — ${Utils.truncate(rnd.content, 50)}`);
+  }
+  renderList();
+}, 30000); // every 30 seconds
+
+loadMessages();
+</script>
+
+  <!-- BOTTOM NAVIGATION (mobile) -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <a href="dashboard.html" class="bottom-nav-item" data-page="dashboard">
+      <span class="bn-icon">🏠</span>
+      <span class="bn-label">Бақылау</span>
+    </a>
+    <a href="messages.html" class="bottom-nav-item active" data-page="messages">
+      <span class="bn-icon">💬</span>
+      <span class="bn-label">Хабарлар</span>
+    </a>
+    <a href="alerts.html" class="bottom-nav-item" data-page="alerts">
+      <span class="bn-icon">⚠️</span>
+      <span class="bn-label">Қауіптер</span>
+      <span class="bn-badge" id="bn-alert-count"></span>
+    </a>
+    <a href="notifications.html" class="bottom-nav-item" data-page="notifications">
+      <span class="bn-icon">🔔</span>
+      <span class="bn-label">Хабарлама</span>
+    </a>
+    <a href="settings.html" class="bottom-nav-item" data-page="settings">
+      <span class="bn-icon">⚙️</span>
+      <span class="bn-label">Баптау</span>
+    </a>
+  </nav>
+</body>
+</html>
